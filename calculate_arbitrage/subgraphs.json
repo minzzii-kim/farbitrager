@@ -1,0 +1,6 @@
+{
+    "ethereum": [
+        "uniswap/uniswap-v2",
+        "sushiswap/exchange"
+    ]
+}

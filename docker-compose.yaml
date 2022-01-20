@@ -1,0 +1,69 @@
+---
+version: '3'
+services:
+  redis:
+    image: redis:buster
+    container_name: arb2-redis
+    command: redis-server --port 7777
+    ports:
+      - "7777:7777"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+  backend:
+    #image: gcr.io/hackmoney-2021/backend
+    container_name: backend
+    tty: true
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      REDIS_PORT: 7777
+      REDIS_HOST: redis
+    depends_on:
+      - redis
+    command: python -m uvicorn backend:app --port 8080 --host 0.0.0.0
+  calc_arb:
+    #image: gcr.io/hackmoney-2021/calculate_arb
+    tty: true
+    build:
+      context: calculate_arbitrage
+      dockerfile: Dockerfile
+    environment:
+      REDIS_PORT: 7777
+      REDIS_HOST: redis
+    depends_on:
+      - redis
+    command: python calculate.py
+  nginx:
+    image: nginx:1.15-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./data/nginx:/etc/nginx/conf.d
+      - ./data/certbot:/etc/letsencrypt
+    depends_on:
+      - backend
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./data/nginx:/etc/nginx/conf.d
+      - ./data/certbot:/etc/letsencrypt
+  # calc_arb_worker:
+  #   image: calculate_arb
+  #   deploy:
+  #     mode: replicated
+  #     replicas: 8
+  #   build:
+  #     context: calculate_arbitrage
+  #     dockerfile: Dockerfile
+  #   environment:
+  #     REDIS_PORT: 7777
+  #     REDIS_HOST: redis
+  #   command: python worker.py
+  #   depends_on:
+  #     - redis
+  #     - calc_arb
+
