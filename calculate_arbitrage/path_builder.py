@@ -35,7 +35,7 @@ class path_builder:
                 "LINK": "0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39".lower()
             }
         }
-        self.eth_to_eth = {self.reserve_tokens["ethereum"][ticker]                           : self.reserve_tokens["ethereum"][ticker] for ticker in self.reserve_tokens["ethereum"]}
+        self.eth_to_eth = {self.reserve_tokens["ethereum"][ticker]: self.reserve_tokens["ethereum"][ticker] for ticker in self.reserve_tokens["ethereum"]}
         #self.eth_to_poly = {self.reserve_tokens["ethereum"][ticker]: self.reserve_tokens["polygon"][ticker] for ticker in self.reserve_tokens["ethereum"]}
         #self.poly_to_eth = {self.reserve_tokens["polygon"][ticker]: self.reserve_tokens["ethereum"][ticker] for ticker in self.reserve_tokens["ethereum"]}
 
@@ -109,6 +109,7 @@ class path_builder:
 
         # Construct adjacency list of AMM edges (we add references to each AMM
         # edge object in both directions to consider all possible paths)
+
         for amm in amm_list:
             edge = {"end": amm["token1"]["id"].lower(), "amm_list": [amm]}
             if amm["token0"]["id"].lower() in adjacency_list[0]:
@@ -216,6 +217,7 @@ class path_builder:
                     reserve_path_formatted[key][-1].append({})
                     reserve_path_formatted[key][-1][-1]["chain"] = chain
                     reserve_path_formatted[key][-1][-1]["id"] = amm["id"]
+                    reserve_path_formatted[key][-1][-1]["dex_name"] = amm["dex_name"]
 
                     if amm["token0"]["id"] == curr_token:
                         reserve_path_formatted[key][-1][-1]["token_in_symbol"] = amm["token0"]["symbol"]

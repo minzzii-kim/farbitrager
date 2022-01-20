@@ -15,7 +15,8 @@ def query_subgraph(
         url=provider_url + subgraph_name, headers=custom_headers,
         timeout=900
     )
-    client = Client(transport=transport, fetch_schema_from_transport=False, execute_timeout=1200)
+    client = Client(transport=transport,
+                    fetch_schema_from_transport=False, execute_timeout=1200)
     query = gql(query_str)
     result = client.execute(query, variables)
     return result
@@ -75,7 +76,13 @@ def get_largest_pairs(
         provider_url=provider_url,
         custom_headers=custom_headers,
     )
-    return r["pairs"], r["_meta"]["block"]["number"]
+    reconstructed_r = []
+
+    for p in r["pairs"]:
+        p["dex_name"] = dex_subgraph
+        reconstructed_r.append(p)
+
+    return reconstructed_r, r["_meta"]["block"]["number"]
 
 
 def _block_timestamp(blocks_subgraph: str, block_number: int) -> int:

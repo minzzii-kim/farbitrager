@@ -34,16 +34,19 @@ def build_lps(subgraph, lp_per_dex, block_number=-1):
             except:
                 logger.error(f"Failed to load {dex_name} subgraph")
                 logger.error(traceback.format_exc())
+
+    # return lps
     return lps
 
 
 def path_string(input_path):
     paths = []
     for entry in input_path:
-        chain = entry["chain"]
+        #chain = entry["chain"]
+        dex = entry["dex_name"]
         _in = entry["token_in_symbol"]
         _out = entry["token_out_symbol"]
-        paths.append(f"{chain}[${_in}->${_out}]")
+        paths.append(f"{dex}[${_in}->${_out}]")
     return " -> ".join(paths)
 
 
